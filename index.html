@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violão Pro | Harmonia & Prática</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --accent: #bb86fc; /* Tom elegante de roxo/lilás */
+            --function-color: #03dac6; /* Para funções harmônicas */
+            --sub-color: #cf6679; /* Para acordes substitutos */
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header e Navegação */
+        header {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            padding: 10px 15px;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* Seção de Input de Música */
+        .search-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background: #2c2c2c;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Área da Cifra Inteligente */
+        .difficulty-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .diff-btn {
+            background: #333;
+            color: #888;
+            flex: 1;
+        }
+        
+        .diff-btn.active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .cifra-display {
+            font-family: 'Courier New', monospace;
+            line-height: 3.5; /* Espaço para anotações */
+            font-size: 1.1rem;
+            white-space: pre-wrap;
+        }
+
+        .chord-wrapper {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Tooltip de Função Harmônica */
+        .harmonic-function {
+            display: block;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--function-color);
+            white-space: nowrap;
+        }
+
+        /* Modal do Acorde (Imagem) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .fretboard-mock {
+            width: 300px;
+            height: 400px;
+            background: #333;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            border: 2px solid #555;
+        }
+
+        /* Conteúdo Teórico */
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .theory-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="#" class="active">Cifra Inteligente</a>
+        <a href="#">Dicionário de Acordes</a>
+        <a href="#">Harmonia Funcional</a>
+        <a href="#">Modos Gregos</a>
+        <a href="#">Cursos Completos</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <section class="search-section">
+        <input type="text" placeholder="Nome da Música (ex: Sampa)" style="flex: 2;">
+        <select style="flex: 1;">
+            <option>Tom Original</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+        </select>
+        <button onclick="gerarCifra()">Analisar com IA</button>
+    </section>
+
+    <div id="music-area">
+        <div class="difficulty-tabs">
+            <button class="diff-btn" onclick="mudarNivel('iniciante')">Iniciante (Fogueira)</button>
+            <button class="diff-btn" onclick="mudarNivel('intermediario')">Intermediário (Bossanova)</button>
+            <button class="diff-btn active" onclick="mudarNivel('avancado')">Avançado (Yamandu/João Alexandre)</button>
+        </div>
+
+        <div class="cifra-display">
+            <h3>Exemplo: "Garota de Ipanema" - Tom: F (Avançado)</h3>
+            
+            <p>
+                Olha que coisa mais linda, mais cheia de graça<br>
+                <span class="chord-wrapper" onclick="abrirAcorde('Fmaj9')">
+                    <span class="harmonic-function">Tônica (I7M)</span>Fmaj9
+                </span> 
+                ... é ela a menina que vem e que passa <br>
+                <span class="chord-wrapper" onclick="abrirAcorde('G13')">
+                    <span class="harmonic-function">Dom. Secundário (V7/V)</span>G13
+                </span>
+                ... num doce balanço a caminho do mar<br>
+                <span class="chord-wrapper" onclick="abrirAcorde('Gm7(9)')">
+                    <span class="harmonic-function">Subdominante (IIm7)</span>Gm7(9)
+                </span>
+                 - 
+                <span class="chord-wrapper" onclick="abrirAcorde('Gb7(#11)')">
+                    <span class="harmonic-function">Subst. Tritono (subV7)</span>Gb7(#11)
+                </span>
+            </p>
+            
+            <div style="background: #2a2a2a; padding: 15px; border-left: 3px solid var(--function-color); margin-top: 20px; font-size: 0.9rem;">
+                <strong>💡 Análise da IA (Estilo Almir Chediak):</strong><br>
+                Observe o uso do acorde <em>Gb7(#11)</em>. Ele substitui o C7 (Dominante) criando uma aproximação cromática para o Fmaj9. No violão fingerstyle, tente tocar a melodia (Lá) na ponta desse acorde.
+            </div>
+        </div>
+    </div>
+
+    <div class="theory-grid" style="margin-top: 50px;">
+        <div class="theory-card">
+            <h3>Modos Gregos</h3>
+            <p>Aprenda a sonoridade do Lídio e como o Mateus Luna o utiliza para criar atmosferas etéreas.</p>
+        </div>
+        <div class="theory-card">
+            <h3>Rearmonização</h3>
+            <p>Técnicas de "Voice Leading" para transformar acordes simples em movimentos de vozes internas.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal" id="chordModal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 id="chordName">Nome do Acorde</h2>
+        
+        <div class="fretboard-mock">
+            <p>Desenho do braço do violão apareceria aqui (foto/gráfico)</p>
+        </div>
+        <p>Intervalos: T, 3M, 5J, 7M, 9M</p>
+    </div>
+</div>
+
+<script>
+    function gerarCifra() {
+        alert("Conectando ao Gemini 3 Pro... (Simulação: Imagine que a cifra está sendo rearmonizada agora!)");
+    }
+
+    function abrirAcorde(nome) {
+        document.getElementById('chordModal').style.display = 'flex';
+        document.getElementById('chordName').innerText = nome;
+    }
+
+    function mudarNivel(nivel) {
+        // Lógica para trocar a complexidade dos acordes
+        const btns = document.querySelectorAll('.diff-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        alert("Alternando para modo: " + nivel);
+    }
+</script>
+
+</body>
+</html>
